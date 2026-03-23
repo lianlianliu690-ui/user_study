@@ -1,0 +1,14 @@
+# 忽略 Streamlit 本地配置和密钥
+.streamlit/
+
+# 忽略 Python 缓存
+__pycache__/
+*.py[cod]
+
+# 忽略本地生成的结果文件
+*.txt
+*.json
+
+# 忽略虚拟环境
+venv/
+.env

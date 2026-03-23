@@ -66,8 +66,8 @@ def download_txt_attachment_pop3(myemail, password, dataset, save_path='./'):
         print(f'发生错误: {str(e)}')
 
 # 获取 Streamlit 秘钥
-myemail = st.secrets["my_email"]["email"]  
-password = st.secrets["my_email"]["password"]
+myemail = "lllaaaiaccept_666@126.com"  # 填入你的邮箱
+password = "KSh7d68NK3Nz8Rg9"  # 填入你的邮箱密码
 
 # 设置数据集和保存路径
 type = ["ablation"]

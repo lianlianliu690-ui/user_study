@@ -1,0 +1,48 @@
+{
+  "user_id": 1,
+  "assigned_tasks": [
+    "1_wayne_0_5_5_exp3_clip3",
+    "2_scott_0_5_5_clip1",
+    "11_nidal_0_5_5_exp3_clip10"
+  ],
+  "method_order": {
+    "1_wayne_0_5_5_exp3_clip3": [
+      "raggesture",
+      "ours",
+      "emage",
+      "gesturelsm"
+    ],
+    "2_scott_0_5_5_clip1": [
+      "gesturelsm",
+      "raggesture",
+      "ours",
+      "emage"
+    ],
+    "11_nidal_0_5_5_exp3_clip10": [
+      "raggesture",
+      "gesturelsm",
+      "emage",
+      "ours"
+    ]
+  },
+  "results": {
+    "1_wayne_0_5_5_exp3_clip3": {
+      "raggesture": 5,
+      "ours": 3,
+      "emage": 4,
+      "gesturelsm": 4
+    },
+    "2_scott_0_5_5_clip1": {
+      "gesturelsm": 3,
+      "raggesture": 3,
+      "ours": 3,
+      "emage": 3
+    },
+    "11_nidal_0_5_5_exp3_clip10": {
+      "raggesture": 4,
+      "gesturelsm": 4,
+      "emage": 4,
+      "ours": 4
+    }
+  }
+}

@@ -66,50 +66,50 @@
 
 # # 如果还要输出每组case的名字，可以加：
 # print("组名示例：", list(groups.keys())[:5])
-import os
-from collections import defaultdict
+# import os
+# from collections import defaultdict
 
-root = r"C:\Users\12551\Desktop\src\video"
-project_root = r"C:\Users\12551\Desktop\src"  # 项目根目录，用于计算相对路径
+# root = r"C:\Users\12551\Desktop\src\video"
+# project_root = r"C:\Users\12551\Desktop\src"  # 项目根目录，用于计算相对路径
     
-methods = ["emage", "gesturelsm", "zeroeggs", "diffuseStyle", "ours"]
+# methods = ["emage", "gesturelsm", "zeroeggs", "diffuseStyle", "ours"]
 
-# 获取所有方法下的case集合（交集）
-case_sets = []
-for method in methods:
-    cases = [d for d in os.listdir(os.path.join(root, method))
-             if os.path.isdir(os.path.join(root, method, d))]
-    case_sets.append(set(cases))
-valid_cases = set.intersection(*case_sets)
+# # 获取所有方法下的case集合（交集）
+# case_sets = []
+# for method in methods:
+#     cases = [d for d in os.listdir(os.path.join(root, method))
+#              if os.path.isdir(os.path.join(root, method, d))]
+#     case_sets.append(set(cases))
+# valid_cases = set.intersection(*case_sets)
 
-group_count = 0
+# group_count = 0
 
-with open("filenames.txt", "w", encoding='utf-8') as f:
-    for case in sorted(valid_cases):
-        # 收集每个方法下所有mp4，按后缀分组
-        suffix2path = defaultdict(dict)
-        for method in methods:
-            case_dir = os.path.join(root, method, case)
-            for file in os.listdir(case_dir):
-                if file.endswith('.mp4') and file.startswith(method + "_"):
-                    # 提取时间段后缀（如_0_10.mp4）
-                    suffix = file[len(method):]  # _0_10.mp4
-                    abs_path = os.path.abspath(os.path.join(case_dir, file))
-                    rel_path = os.path.relpath(abs_path, project_root)
-                    suffix2path[suffix][method] = rel_path
-        # 只输出五方法都齐全的时间段
-        for suffix in sorted(suffix2path):
-            files = suffix2path[suffix]
-            if all(m in files for m in methods):
-                for m in methods:
-                    f.write(files[m] + '\n')
-                f.write('\n')
-                group_count += 1
-            else:
-                lost = [m for m in methods if m not in files]
-                print(f"缺少:{case} {suffix} -> {lost}")
+# with open("filenames.txt", "w", encoding='utf-8') as f:
+#     for case in sorted(valid_cases):
+#         # 收集每个方法下所有mp4，按后缀分组
+#         suffix2path = defaultdict(dict)
+#         for method in methods:
+#             case_dir = os.path.join(root, method, case)
+#             for file in os.listdir(case_dir):
+#                 if file.endswith('.mp4') and file.startswith(method + "_"):
+#                     # 提取时间段后缀（如_0_10.mp4）
+#                     suffix = file[len(method):]  # _0_10.mp4
+#                     abs_path = os.path.abspath(os.path.join(case_dir, file))
+#                     rel_path = os.path.relpath(abs_path, project_root)
+#                     suffix2path[suffix][method] = rel_path
+#         # 只输出五方法都齐全的时间段
+#         for suffix in sorted(suffix2path):
+#             files = suffix2path[suffix]
+#             if all(m in files for m in methods):
+#                 for m in methods:
+#                     f.write(files[m] + '\n')
+#                 f.write('\n')
+#                 group_count += 1
+#             else:
+#                 lost = [m for m in methods if m not in files]
+#                 print(f"缺少:{case} {suffix} -> {lost}")
 
-print(f"可用完整分组(五方法同时间段)共: {group_count} 组")
+# print(f"可用完整分组(五方法同时间段)共: {group_count} 组")
 
 
 # import os
@@ -127,3 +127,25 @@ print(f"可用完整分组(五方法同时间段)共: {group_count} 组")
 #                     if mp4.endswith('.mp4') and mp4.startswith(method + "_"):
 #                         abs_path = os.path.abspath(os.path.join(subdir, mp4))
 #                         f.write(abs_path + "\n")
+
+
+# fix_paths.py
+# 替换 filenames.txt 中的 Windows 路径为 Linux 格式
+
+def fix_windows_paths(file_path="filenames.txt"):
+    try:
+        with open(file_path, "r", encoding="utf-8") as f:
+            lines = f.readlines()
+
+        # 替换 \ 为 /
+        fixed_lines = [line.replace("\\", "/") for line in lines]
+
+        with open(file_path, "w", encoding="utf-8") as f:
+            f.writelines(fixed_lines)
+
+        print(f"✅ 成功替换路径分隔符，文件已保存：{file_path}")
+    except Exception as e:
+        print(f"❌ 处理失败：{e}")
+
+if __name__ == "__main__":
+    fix_windows_paths()

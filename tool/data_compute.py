@@ -1,70 +1,55 @@
 import os
-
-def compute(folder_path):
-    for filename in os.listdir(folder_path):
-        if filename.endswith(".txt"): 
-            file_path = os.path.join(folder_path, filename)
-            
-            with open(file_path, 'r') as file:
-                lines = file.readlines()
-                l_s = lines[0].strip()
-                e_a = lines[1].strip()
-                e_f = lines[2].strip()
-                
-        human_likeness.append(l_s)
-        smoothness.append(e_a)
-        semantic_accuracy.append(e_f)
-
-def calculate_average(matrix):
-    rows = len(matrix)
-    cols = len(matrix[0]) if rows > 0 else 0
-    a = b = c = 0
-    all = [a, b, c]
-
-    for row in matrix:
-        for i in range(cols):
-            if i % 3 == 0:
-                all[0] += int(row[i]) + 1
-            elif i % 3 == 1:
-                all[1] += int(row[i]) + 1
-            elif i % 3 == 2:
-                all[2] += int(row[i]) + 1
-    # 计算平均值并保留两位小数
-    for i in range(3):
-        all[i] = round(all[i] / rows / (cols / 3), 2)  # 保留两位小数
-
-    return all
-
-
-
+import json
 import pandas as pd
 
-if __name__ == '__main__':
-    Methods = ['rym', 'ours','rym+sem']
-    method_num = len(Methods)
-    dataset=['ablation']
-    excel_path = 'output.xlsx'
+# 方法顺序
+methods = ["emage", "gesturelsm", "zeroeggs", "diffuseStyle", "ours"]
+metrics = ["human_likeness", "smoothness", "semantic_accuracy"]
 
-    with pd.ExcelWriter(excel_path, engine='openpyxl') as writer:
-        for data in dataset:
-            folder_path = os.path.join('result', data)
-            human_likeness = []
-            smoothness = []
-            semantic_accuracy = []
-            compute(folder_path)
-            Human_likeness = calculate_average(human_likeness)
-            Smoothness = calculate_average(smoothness)
-            Semantic_Accuracy = calculate_average(semantic_accuracy)
+# 存储所有记录
+records = []
 
-            df = pd.DataFrame({
-                'method': Methods,
-                'human_likeness': Human_likeness,
-                'smoothness': Smoothness,
-                'semantic_accuracy': Semantic_Accuracy
+def process_file(file_path, filename):
+    with open(file_path, 'r', encoding='utf-8') as f:
+        try:
+            data = json.load(f)
+        except json.JSONDecodeError:
+            print(f"[跳过] 无效 JSON: {file_path}")
+            return
+
+    for metric in metrics:
+        values = data.get(metric, [])
+        if len(values) != 10:
+            print(f"[跳过] {metric} 不满足 10 项评分: {file_path}")
+            return
+
+        # 拆分为每组5个方法，记录每个方法对应的评分
+        for i in range(5):  # 第一组
+            records.append({
+                "file": filename,
+                "group": 1,
+                "method": methods[i],
+                "metric": metric,
+                "score": values[i]
+            })
+        for i in range(5):  # 第二组
+            records.append({
+                "file": filename,
+                "group": 2,
+                "method": methods[i],
+                "metric": metric,
+                "score": values[i + 5]
             })
 
-            df.columns.values[0] = f'{data}'
-            df.to_excel(writer, sheet_name=data, index=False)
+if __name__ == '__main__':
+    folder_path = r'C:\Users\12551\Desktop\src_1\result\ablation'  # 修改为你的实际路径
 
-            print(df)
-            #print('\n')
+    for filename in os.listdir(folder_path):
+        if filename.endswith(".txt"):
+            full_path = os.path.join(folder_path, filename)
+            process_file(full_path, filename)
+
+    df = pd.DataFrame(records)
+    df = df[["file", "group", "method", "metric", "score"]]  # 排序列
+    df.to_excel("all_scores_raw.xlsx", index=False)
+    print("✅ 所有评分已提取并保存为 all_scores_raw.xlsx")

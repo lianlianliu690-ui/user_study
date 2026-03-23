@@ -1,0 +1,48 @@
+{
+  "user_id": 2,
+  "assigned_tasks": [
+    "1_wayne_0_5_5_exp3_clip6",
+    "4_lawrence_0_2_2_clip1",
+    "30_katya_0_95_95_exp3_clip3"
+  ],
+  "method_order": {
+    "1_wayne_0_5_5_exp3_clip6": [
+      "raggesture",
+      "gesturelsm",
+      "ours",
+      "emage"
+    ],
+    "4_lawrence_0_2_2_clip1": [
+      "ours",
+      "emage",
+      "gesturelsm",
+      "raggesture"
+    ],
+    "30_katya_0_95_95_exp3_clip3": [
+      "ours",
+      "raggesture",
+      "emage",
+      "gesturelsm"
+    ]
+  },
+  "results": {
+    "1_wayne_0_5_5_exp3_clip6": {
+      "raggesture": 4,
+      "gesturelsm": 4,
+      "ours": 4,
+      "emage": 4
+    },
+    "4_lawrence_0_2_2_clip1": {
+      "ours": 4,
+      "emage": 4,
+      "gesturelsm": 4,
+      "raggesture": 4
+    },
+    "30_katya_0_95_95_exp3_clip3": {
+      "ours": 4,
+      "raggesture": 4,
+      "emage": 4,
+      "gesturelsm": 4
+    }
+  }
+}
