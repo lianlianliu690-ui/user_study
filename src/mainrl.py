@@ -28,6 +28,9 @@ try:
 except KeyError:
     st.error("❌ 未找到 Secrets 配置，请在 Streamlit Cloud 仪表盘设置。")
     st.stop()
+
+
+    
 METHODS = ["ours", "raggesture", "gesturelsm", "emage"]
 TOTAL_SAMPLES_NEEDED = 60                 # 目标收集样本数
 
@@ -201,18 +204,25 @@ def render_comparison_row(sample_id, step_idx):
     for i, m_name in enumerate(display_methods):
         # 使用容器美化每一组视频
         with st.container():
-            st.markdown(f"### 🎥 候选方法 {chr(65+i)}")
+            # --- 新增提示语 ---
+            st.markdown(f"""
+                <div style="display: flex; justify-content: space-between; background-color: #f0f2f6; padding: 5px 15px; border-radius: 5px; margin-bottom: 10px;">
+                    <span style="font-weight: bold; color: #ff4b4b;">👈 左侧：候选方法 {chr(65+i)}</span>
+                    <span style="font-weight: bold; color: #1f77b4;">右侧：地面真实运动 (Ground Truth) 👉</span>
+                </div>
+            """, unsafe_allow_html=True)
+            # ----------------
             
             # 路径：video_rl/方法名/样本ID.mp4
             video_url = f"video_rl/{m_name}/{sample_id}.mp4" 
             
             if os.path.exists(video_url):
-                # 调整视频宽度，防止垂直排列时视频过大导致刷屏严重
+                # 调整视频宽度
                 st.video(video_url) 
             else:
                 st.error(f"文件未找到: {video_url}")
             
-            # 打分项放在视频下方
+            # 打分项
             scores[m_name] = st.radio(
                 f"请对 **方法 {chr(65+i)}** 进行打分 (1=差, 5=好)", 
                 [1, 2, 3, 4, 5], 
