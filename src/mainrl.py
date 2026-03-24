@@ -156,44 +156,31 @@ def data_collection(results_dict, count):
 def render_comparison_row(sample_id, step_idx):
     info = METADATA.get(sample_id, {"text": "", "cat": ""})
     
-    # A. 顶部引导语与文本展示 (修改后)
+    # A. 顶部引导语（不再重复显示文本，只保留重点说明）
     if info['cat'] == "humanity":
         st.subheader("实验一：运动自然度和音频一致性评分")
         st.info("""
-        💡 **评价重点：**
-        1. **物理真实性**：请观察视频中虚拟角色的运动，并判断其是否符合人类的真实行为习惯（请忽略面部表情）。
-        2. **韵律契合度**：动作的起伏、停顿与力度，是否与语音的**节奏、重音及语气变化**高度一致。
-        
-        ⚠️ **注意**：本组实验旨在考察模型的基础生成能力，**不提供文本对照**，请凭直觉感知音画配合度。  
-        📌 **技术说明**：部分视频中脚步可能存在轻微漂移现象，此为模型生成的正常现象，**请重点关注肢体动作的质量与节奏**。
+        💡 **评价重点：** 1. 物理真实性；2. 韵律契合度。  
+        ⚠️ **注意**：本组不提供文本，请凭直觉感知音画配合度。  
+        📌 **技术说明**：部分视频脚步存在漂移为正常现象，请关注肢体动作。
         """)
     elif info['cat'] in EXP2_SUB_CATS:
         st.subheader("实验二：逻辑衔接与话语态势评分")
-        st.warning(f"💬 **语音文本：** {info['text']}")
         st.info("""
-        🔍 **评价重点：**
-        1. **逻辑转折点**：观察在出现“但是(BUT)”、“因为(BECAUSE)”、“所以(SO)”等词汇时，动作是否有明显的**幅度改变或方向切换**。
-        2. **隐式衔接**：即使没有显式逻辑词，在语意发生因果或并列转折处，数字人的姿态（Pose）是否做出了相应的引导或强调。
-        
-        ⚠️ **评价建议**：请先通读上方文本理解逻辑，再观察视频中动作的“起承转合”是否自然衔接。  
-        📌 **技术说明**：部分视频中脚步可能存在轻微漂移现象，此为模型生成的正常现象，**请重点关注运动动作的逻辑衔接**。
+        🔍 **评价重点：** 1. 逻辑转折点（如BUT/SO）；2. 话语态势引导。  
+        📌 **技术说明**：部分视频脚步存在漂移为正常现象，请关注肢体动作。
         """)
     else:
         st.subheader("实验三：特定语义与动作准确度评分")
-        st.success(f"💬 **语音文本：** {info['text']}")
         st.info("""
-        🔍 **评价重点：**
-        1. **动作还原度**：重点观察肢体动作是否精准地“表现”了语音中的具体含义（如：指点、挥手、犹豫、惊恐等）。
-        2. **语义生动性**：动作是否具有**高辨识度**，能否让人一眼看出在做什么，而非仅仅是随语调进行的机械摆动。
-        
-        ⚠️ **注意**：本组实验包含较多具有**明确含义**的关键词，请重点判断数字人是否捕捉到了这些特定词汇所蕴含的动作细节。  
-        📌 **技术说明**：部分视频中脚步可能存在轻微漂移现象，此为模型生成的正常现象，**请重点关注动作与语义的匹配度**。
+        🔍 **评价重点：** 1. 动作还原度（如挥手/惊恐）；2. 语义生动性。  
+        📌 **技术说明**：部分视频脚步存在漂移为正常现象，请关注肢体动作。
         """)
 
     st.write(f"📊 **总进度: {step_idx + 1} / 3**")
     st.divider()
 
-    # B. 随机打乱方法顺序 (防止位置偏见)
+    # B. 随机打乱方法顺序
     display_methods = METHODS.copy()
     if f"order_{sample_id}" not in st.session_state:
         random.shuffle(display_methods)
@@ -205,33 +192,38 @@ def render_comparison_row(sample_id, step_idx):
 
     # C. 垂直循环渲染视频
     for i, m_name in enumerate(display_methods):
-        # 使用容器美化每一组视频
         with st.container():
-            # --- 新增提示语 ---
+            # --- 1. 显示对应方法的标签 ---
+            st.markdown(f"### 🎥 候选方法 {chr(65+i)}")
+            
+            # --- 2. 在视频正上方加入语音转录文本 (实验二和三显示) ---
+            if info['cat'] != "humanity" and info['text']:
+                st.markdown(f"""
+                    <div style="background-color: #fdf2f2; border-left: 5px solid #ff4b4b; padding: 10px; margin-bottom: 10px;">
+                        <strong style="color: #ff4b4b;">💬 语音转录文本：</strong> {info['text']}
+                    </div>
+                """, unsafe_allow_html=True)
+            
+            # --- 3. 左右对比提示语 ---
             st.markdown(f"""
                 <div style="display: flex; justify-content: space-between; background-color: #f0f2f6; padding: 5px 15px; border-radius: 5px; margin-bottom: 10px;">
                     <span style="font-weight: bold; color: #ff4b4b;">👈 左侧：候选方法 {chr(65+i)}</span>
                     <span style="font-weight: bold; color: #1f77b4;">右侧：地面真实运动 (Ground Truth) 👉</span>
                 </div>
             """, unsafe_allow_html=True)
-            # ----------------
             
-            # 路径：video_rl/方法名/样本ID.mp4
+            # --- 4. 渲染视频 ---
             video_url = f"video_rl/{m_name}/{sample_id}.mp4" 
-            
             if os.path.exists(video_url):
-                # 调整视频宽度
                 st.video(video_url) 
             else:
                 st.error(f"文件未找到: {video_url}")
             
-            # 定义两行文案：第一行加粗，第二行缩小并换行
-            # 注意：第一行末尾有两个空格，这是 Markdown 换行的触发开关
+            # --- 5. 评分组件 ---
             label_text = (
                 f"请对 **方法 {chr(65+i)}** 进行打分 (1=差, 5=好)  \n"
                 f":gray[（注意：右侧 GT 仅作为运动合理性的参考标准，而非追求动作轨迹的完全重合。）]"
             )
-
             scores[m_name] = st.radio(
                 label=label_text,
                 options=[1, 2, 3, 4, 5], 
@@ -239,8 +231,8 @@ def render_comparison_row(sample_id, step_idx):
                 key=f"score_{step_idx}_{i}",
                 horizontal=True
             )
-            st.write("") # 留白
-            st.divider() # 方法之间的分割线
+            st.write("") 
+            st.divider() 
 
     return scores
 
