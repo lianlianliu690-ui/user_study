@@ -30,7 +30,7 @@ except KeyError:
     st.stop()
 
 
-    
+
 METHODS = ["ours", "raggesture", "gesturelsm", "emage"]
 TOTAL_SAMPLES_NEEDED = 60                 # 目标收集样本数
 
@@ -222,10 +222,16 @@ def render_comparison_row(sample_id, step_idx):
             else:
                 st.error(f"文件未找到: {video_url}")
             
-            # 打分项
+            # 定义两行文案：第一行加粗，第二行缩小并换行
+            # 注意：第一行末尾有两个空格，这是 Markdown 换行的触发开关
+            label_text = (
+                f"请对 **方法 {chr(65+i)}** 进行打分 (1=差, 5=好)  \n"
+                f":gray[（注意：右侧 GT 仅作为运动合理性的参考标准，而非追求动作轨迹的完全重合。）]"
+            )
+
             scores[m_name] = st.radio(
-                f"请对 **方法 {chr(65+i)}** 进行打分 (1=差, 5=好)", 
-                [1, 2, 3, 4, 5], 
+                label=label_text,
+                options=[1, 2, 3, 4, 5], 
                 index=None, 
                 key=f"score_{step_idx}_{i}",
                 horizontal=True
